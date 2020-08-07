@@ -8,6 +8,8 @@ from twitchio.abcs import Messageable
 nick_bot = ''
 inicia_canal = ''
 
+# Lista de comandos que serão ignorados pelo bot (coloque o comando com o prefixo)
+commands_BL = ("!commands", "!followage", "!uptime", "!watchtime", "!points")
 
 bot = commands.Bot(
     # set up the bot
@@ -38,11 +40,6 @@ async def event_ready():
 
             await ws.send_privmsg(inicia_canal, msg_selecionada)
             await asyncio.sleep(180.0)
-
-
-@bot.command(name='points')
-async def fn_points(ctx):
-    return
 
 
 @bot.command(name='addengajar')
@@ -107,18 +104,42 @@ async def event_message(ctx):
     await bot.handle_commands(ctx)
 
     # await ctx.channel.send(ctx.content)
-
     if 'bom dia' in ctx.content.lower():
         await ctx.channel.send(f"Bom dia, @{ctx.author.name}! Como você está?")
 
-    if 'boa tarde' in ctx.content.lower():
+    elif 'boa tarde' in ctx.content.lower():
         await ctx.channel.send(f"Boa tarde, @{ctx.author.name}! Como você está?")
 
-    if 'boa noite' in ctx.content.lower():
+    elif 'boa noite' in ctx.content.lower():
         await ctx.channel.send(f"Boa noite, @{ctx.author.name}! Como você está?")
 
-    if 'salve' in ctx.content.lower():
+    elif 'good morning' in ctx.content.lower():
+        await ctx.channel.send(f'Good morning, @{ctx.author.name}! Como você está?')
+
+    elif 'good afternoon' in ctx.content.lower():
+        await ctx.channel.send(f'Good afternoon, @{ctx.author.name}! Como você está?')
+
+    elif 'good evening' in ctx.content.lower():
+        await ctx.channel.send(f'Good evening, @{ctx.author.name}! How are you?')
+
+    elif 'good night' in ctx.content.lower():
+        await ctx.channel.send(f'Good night, @{ctx.author.name}! How are you?')
+
+    elif 'salve' in ctx.content.lower():
         await ctx.channel.send(f"Ta salvado, @{ctx.author.name}! Como você está?")
+
+
+# Faz a verificação se possue um comando ou não
+@bot.event
+async def event_command_error(ctx, error):
+    ''' Caso o comando digitado seja algum que esteja na BlackList(comands_BL)
+        nenhuma raise será levantada'''
+    if ctx.content in commands_BL:
+        print(ctx.content)
+        return
+
+    # Se um comando digitado não existir, alerta a pessoa que não existe o comando
+    await ctx.channel.send(f"@{ctx.author.name} ItsBoshyTime 404 Not found.")
 
 
 @bot.command(name='test')
@@ -128,3 +149,4 @@ async def test(ctx):
 
 if __name__ == "__main__":
     bot.run()
+
